@@ -13,15 +13,13 @@ $novahora = substr($hora,0,2) . "h" .substr($hora,3,2) . "min";
 <hr><br>
 <form  method='post'>
 Nome:<input name='nome' type='text' size=30> *<br>
-Sobrenome:<input name='sobrenome' type='text' size=30> *<br>
 Cidade:<input name='cidade' type='text' size=30> *<br>
-Estado:<i>(Exemplo: SP, RS, BA)</i><input name='estado' type='text' size=5> *<br>
 Email: <i>(Exemplo: feitosac@yahoo.com)</i><input name='email' type='text' size=30><br><br>
 Título do Texto:<input name='titulo' type='text' size=30> *<br>
 Subtítulo do Texto:<textarea name='subtitulo' rows=5 cols=30></textarea><br>
 Texto:<textarea name='texto' rows=10 cols=30></textarea> *<br>
 <input name='data' type='hidden' value='<?php echo $data ?>'><input name='hora' type='hidden' value='<?php echo $hora ?>'>
-<input type='submit' value='Cadastrar' name="cadastrar">
+<input type='submit' value='Enviar notícia' name="enviar">
 </form>
 <br><hr>
 <i>Campos marcados com <b>*</b> são obrigatórios no cadastro.<br>
@@ -29,30 +27,36 @@ Texto:<textarea name='texto' rows=10 cols=30></textarea> *<br>
 Data: $novadata - Hora: $novahora<br>
 
 <?php
-
-//Vamos definir as variáveis de data e hora
-//para inserção no banco de dados
-
-//Agora com as variáveis de data e hora criadas
-//vamos criar uma variável especial para a querie sql
-
-if(filter_input(INPUT_POST, 'cadastrar' )){
-    extract(filter_input_array(INPUT_POST, FILTER_DEFAULT), EXTR_OVERWRITE);
-$sql = "INSERT INTO noticias (nome, sobrenome, cidade, estado, email, data, hora, titulo, subtitulo, texto) VALUES ('$nome', '$sobrenome', '$cidade', '$estado', '$email', '$data', '$hora', '$titulo', '$subtitulo', '$texto')";
-
-//Agora é hora de contatar o mysql
-            $host = "localhost";
-            $user = "root";
-            $pass = "";
-            $banco = "portalteste";
-$conexao = mysqli_connect($host, $user, $pass, $banco)
-or die ("Configuração de Banco de Dados Errada!");
-
-//Inserindo os dados
-
-$sql = mysqli_query($conexao, $sql) 
-or die ("Houve erro na gravação dos dados, por favor, clique em voltar e verifique os campos obrigatórios!" . mysqli_error($conexao));
-
-echo "<h1>Cadastro efetuado com sucesso!</h1>";
+if (isset($_POST["enviar"])) {
+    $usuario->setUs_nome($_POST["usNome"]);
+    $usuario->setUs_email($_POST["usEmail"]);
+    $usuario->setUs_sexo($_POST["slSexo"]);
+    if (!$usuarioDAO->consultarEmail($_POST['usEmail'])) {
+        if ($usuarioDAO->cadastrar($usuario)) {
+            $codUsu = $usuarioDAO->consultarCodUsuario($_POST['usEmail']);
+            $senha->setSe_senha($_POST['usSenhaRep']);
+            $senha->setUs_cod($codUsu);
+            if ($senhaDAO->cadastrar($senha)) {
+                ?>
+                <script type="text/javascript">
+                    alert("Cadastrado com sucesso!");
+                    document.location.href = "index.php?&pg=login";
+                </script>
+                <?php
+            } else {
+                ?>
+                <script type="text/javascript">
+                    alert("Erro ao cadastrar");
+                </script>
+                <?php
+            }
+        }
+    } else {
+        ?>
+        <script type="text/javascript">
+            alert("O E-mail informado jรก foi cadastrado");
+        </script>
+        <?php
+    }
 }
 ?>
