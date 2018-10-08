@@ -13,7 +13,6 @@ $novahora = substr($hora,0,2) . "h" .substr($hora,3,2) . "min";
 <hr><br>
 <form  method='post'>
 Nome:<input name='nome' type='text' size=30> *<br>
-Cidade:<input name='cidade' type='text' size=30> *<br>
 Email: <i>(Exemplo: feitosac@yahoo.com)</i><input name='email' type='text' size=30><br><br>
 Título do Texto:<input name='titulo' type='text' size=30> *<br>
 Subtítulo do Texto:<textarea name='subtitulo' rows=5 cols=30></textarea><br>
